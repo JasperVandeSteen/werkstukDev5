@@ -10,7 +10,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "jest"
+    "start": "node index.js",
+    "test": "jest --watchAll"
   },
   "repository": {
     "type": "git",
