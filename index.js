@@ -73,11 +73,11 @@ function loadPgData() {
     })
 }
 
-function addPgData(naam, email) {
+function addPgData(body) {
     client.connect();
 
     client.query(
-        `INSERT INTO users(naam, id, email)VALUES(${naam}, gen_random_uuid(), ${email})`,
+        `INSERT INTO users(naam, id, email) VALUES ('${body.naam}', gen_random_uuid(), '${body.email}')`,
         (err, res) => {
             console.log(err, res);
             client.end;
