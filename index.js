@@ -116,5 +116,6 @@ module.exports = {
     client,
     loadPgData,
     addPgData,
-    updatePgData
+    updatePgData,
+    deletePgData
 }

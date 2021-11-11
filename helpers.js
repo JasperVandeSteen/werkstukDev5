@@ -21,6 +21,28 @@ const helpers = {
         }
         return false;
     },
+
+    /**
+     * check if body send by endpoint is in order
+     * @param {object} body 
+     * @returns {object} body if all is capitalised and shortened, or false if something missing
+     */
+    bodyCheck(body) {
+        if (body && body.naam && body.email) {
+            const {
+                naam,
+                email
+            } = body;
+            if (naam.includes(" ") && email.includes("@")) {
+                return {
+                    ...body,
+                    naam: naam,
+                    email: email
+                }
+            }
+        }
+        return false;
+    },
 }
 
 module.exports = helpers;
