@@ -1,16 +1,10 @@
 const express = require('express')
-const bodyparser = require('body-parser');
 
 const app = express()
 const bgRouter = express.Router();
 const port = 8000
 
 let pgData;
-
-app.use(bodyparser.urlencoded({
-    extended: true
-}));
-app.use(bodyparser.json());
 
 const {
     Client

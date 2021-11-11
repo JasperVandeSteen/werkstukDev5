@@ -19,9 +19,3 @@ it('tests if connection to endpoint is successful', async () => {
     expect(response.statusCode).toEqual(200);
     expect(response.body.naam).toBe("mienMerk");
 });
-
-describe("CRUD function tests", () => {
-    test("check get response", () => {
-        //todo
-    })
-})
