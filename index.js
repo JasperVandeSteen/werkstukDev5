@@ -5,6 +5,8 @@ const app = express()
 const bgRouter = express.Router();
 const port = 8000
 
+let pgData;
+
 app.use(bodyparser.urlencoded({
     extended: true
 }));
@@ -21,8 +23,15 @@ const client = new Client({
     database: "postgres"
 })
 
-let pgData;
+const pg = require('knex')({
 
+    client: 'pg',
+
+    searchPath: ['knex', 'public'],
+
+    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@localhost:5432/users'
+
+});
 
 
 startExpress();
