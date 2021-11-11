@@ -13,21 +13,7 @@ describe("Express function tests", () => {
 })
 
 describe("CRUD function tests", () => {
-    test("check update body", () => {
-        const body = functions.updatePgData.body
-        expect(helpers.bodyCheck({})).toBeFalsy();
-        expect(helpers.bodyCheck(body)).toEqual({
-            ...body,
-            naam: "Jan Peeters",
-            email: "jan.peeters@gmail.com"
-        });
-        expect(helpers.bodyCheck({
-            ...body,
-            naam: null
-        })).toBeFalsy();
-        expect(helpers.bodyCheck({
-            ...body,
-            email: null
-        })).toBeFalsy();
+    test("check get response", () => {
+        //todo
     })
 })

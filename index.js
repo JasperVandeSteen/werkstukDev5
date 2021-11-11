@@ -64,7 +64,7 @@ function loadPgData() {
 
     client.query(`Select * from users`, (err, res) => {
         if (!err) {
-            console.log(res.rows);
+            //console.log(res.rows);
             pgData = res.rows;
         } else {
             console.log(err.message);
@@ -117,5 +117,6 @@ module.exports = {
     loadPgData,
     addPgData,
     updatePgData,
-    deletePgData
+    deletePgData,
+    pgData
 }
