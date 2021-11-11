@@ -4,15 +4,16 @@
   "description": "Werkstuk met basis API functionalities + TDD",
   "main": "index.js",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "jest": "^27.3.1",
-    "nodemon": "^2.0.14",
+    "nodemon": "^2.0.15",
     "pg": "^8.7.1"
   },
   "devDependencies": {},
   "scripts": {
     "start": "node index.js",
-    "test": "jest --watchAll"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
