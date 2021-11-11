@@ -33,12 +33,20 @@ const pg = require('knex')({
 
 });
 
+async function selectUsers() {
+    pgData = await pg.select().table("users");
+}
+
 
 startExpress();
 bgRouter.route('/users')
     .get((req, res) => {
-        loadPgData();
-        res.send(pgData);
+        let data = {
+            naam: "mienMerk"
+        }
+        //loadPgData();
+        selectUsers();
+        res.send(data);
     })
     .post((req, res) => {
         addPgData(req.body);
@@ -121,6 +129,7 @@ function deletePgData(id) {
 
 module.exports = {
     startExpress,
+    app,
     port,
     client,
     loadPgData,

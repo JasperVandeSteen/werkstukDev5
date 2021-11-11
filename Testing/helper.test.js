@@ -1,6 +1,8 @@
 const helpers = require("./../helpers")
 const functions = require("./../index")
 
+const request = require('supertest');
+
 describe("Express function tests", () => {
     const port = functions.port.toString();
     const pgPort = functions.client.port.toString();
@@ -11,6 +13,12 @@ describe("Express function tests", () => {
         expect(helpers.checkStringLength(pgPort, 4)).toMatch(pgPort);
     })
 })
+
+it('tests if connection to endpoint is successful', async () => {
+    const response = await request(functions.app).get('/pgData/users');
+    expect(response.statusCode).toEqual(200);
+    expect(response.body.naam).toBe("mienMerk");
+});
 
 describe("CRUD function tests", () => {
     test("check get response", () => {
