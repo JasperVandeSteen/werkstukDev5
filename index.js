@@ -33,14 +33,17 @@ bgRouter.route('/users')
     })
     .post((req, res) => {
         addPgData(req.body);
+        res.send("Succesfully added data!");
     });
 
 bgRouter.route('/users/:id')
     .delete((req, res) => {
         deletePgData(req.params.id);
+        res.send("Succesfully deleted!");
     })
     .patch((req, res) => {
         updatePgData(req.body, req.params.id);
+        res.send("Succesfully updated!");
     });
 
 
