@@ -4,8 +4,6 @@ const app = express()
 const bgRouter = express.Router();
 const port = 8000
 
-let pgData;
-
 const {
     Client
 } = require('pg')
@@ -23,24 +21,20 @@ const pg = require('knex')({
 
     searchPath: ['knex', 'public'],
 
-    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@localhost:5432/users'
+    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@pg:5432/postgres'
 
 });
 
-async function selectUsers() {
-    pgData = await pg.select().table("users");
-}
+let pgData;
 
+
+// BGROUTING FOR CRUDN ACTIONS ------------------------------------------
 
 startExpress();
 bgRouter.route('/users')
     .get((req, res) => {
-        let data = {
-            naam: "mienMerk"
-        }
-        //loadPgData();
-        selectUsers();
-        res.send(data);
+        getPgData();
+        res.send(pgData);
     })
     .post((req, res) => {
         addPgData(req.body);
@@ -57,10 +51,12 @@ bgRouter.route('/users/:id')
         res.send("Succesfully updated!");
     });
 
+//---------------------------------------------------------------------
+
 
 function startExpress() {
     app.get('/', (req, res) => {
-        res.send('type /pgData to go further...')
+        res.send("type /pgData to continiue...")
     });
 
     app.use('/pgData', bgRouter);
@@ -70,54 +66,45 @@ function startExpress() {
     });
 }
 
-function loadPgData() {
-    client.connect();
-
-    client.query(`Select * from users`, (err, res) => {
-        if (!err) {
-            //console.log(res.rows);
-            pgData = res.rows;
-        } else {
-            console.log(err.message);
+async function createTable() {
+    await pg.schema.hasTable('users').then(function (exists) {
+        if (!exists) {
+            return pg.schema.createTable('users', function (t) {
+                t.increments('id').primary();
+                t.string("naam", 100);
+                t.string("email", 100);
+            });
         }
-        client.end;
+    });
+    for (let i = 0; i < 6; i++) {
+        await pg.table('users').insert({
+            naam: "test" + i,
+            email: "test" + 1 + "@test.com"
+        });
+    }
+}
+//createTable();
+
+async function getPgData() {
+    pgData = await pg.select().table("users");
+}
+
+async function addPgData(body) {
+    await pg.table('users').insert({
+        "naam": body.naam,
+        "email": body.email
+    });
+}
+
+async function updatePgData(body, id) {
+    return await pg.table('users').where('id', '=', id).update({
+        "naam": "UPDATE",
+        "email": "update@update.com"
     })
 }
 
-function addPgData(body) {
-    client.connect();
-
-    client.query(
-        `INSERT INTO users(naam, id, email) VALUES ('${body.naam}', gen_random_uuid(), '${body.email}')`,
-        (err, res) => {
-            console.log(err, res);
-            client.end;
-        }
-    );
-}
-
-function updatePgData(body, id) {
-    client.connect();
-
-    client.query(
-        `UPDATE users SET "naam" = '${body.naam}', "email" = '${body.email}' WHERE "id" = '${id}'`,
-        (err, res) => {
-            console.log(err, res);
-            client.end;
-        }
-    );
-}
-
-function deletePgData(id) {
-    client.connect();
-
-    client.query(
-        `DELETE FROM users WHERE "id" = '${id}'`,
-        (err, res) => {
-            console.log(err, res);
-            client.end;
-        }
-    );
+async function deletePgData(id) {
+    return await pg.table('users').where('id', '=', id).del();
 }
 
 
@@ -126,7 +113,8 @@ module.exports = {
     app,
     port,
     client,
-    loadPgData,
+    createTable,
+    getPgData,
     addPgData,
     updatePgData,
     deletePgData,

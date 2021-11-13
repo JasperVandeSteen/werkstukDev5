@@ -17,5 +17,4 @@ describe("Express function tests", () => {
 it('tests if connection to endpoint is successful', async () => {
     const response = await request(functions.app).get('/pgData/users');
     expect(response.statusCode).toEqual(200);
-    expect(response.body.naam).toBe("mienMerk");
 });
