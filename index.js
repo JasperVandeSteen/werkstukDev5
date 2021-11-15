@@ -53,7 +53,9 @@ bgRouter.route('/users/:id')
 
 //---------------------------------------------------------------------
 
-
+/**
+ * Starts up the express server on localhost.
+ */
 function startExpress() {
     app.get('/', (req, res) => {
         res.send("type /pgData to continiue...")
@@ -66,6 +68,9 @@ function startExpress() {
     });
 }
 
+/**
+ * Creates a standard table if the database doesn't yet contain one.
+ */
 async function createTable() {
     await pg.schema.hasTable('users').then(function (exists) {
         if (!exists) {
@@ -83,12 +88,16 @@ async function createTable() {
         });
     }
 }
-//createTable();
+createTable();
 
 async function getPgData() {
     pgData = await pg.select().table("users");
 }
 
+/**
+ * Adds an element to the users table
+ * @param {*} body the provided body in the POST request
+ */
 async function addPgData(body) {
     await pg.table('users').insert({
         "naam": body.naam,
@@ -96,6 +105,12 @@ async function addPgData(body) {
     });
 }
 
+/**
+ * Updates the selected table element.
+ * @param {*} body the provided body in the PATCH request
+ * @param {*} id the id from the link
+ * @returns Returns the updated element
+ */
 async function updatePgData(body, id) {
     return await pg.table('users').where('id', '=', id).update({
         "naam": "UPDATE",
@@ -103,6 +118,11 @@ async function updatePgData(body, id) {
     })
 }
 
+/**
+ * Deletes a selceted table element.
+ * @param {*} id the id from the link
+ * @returns Returns the deleted element
+ */
 async function deletePgData(id) {
     return await pg.table('users').where('id', '=', id).del();
 }
