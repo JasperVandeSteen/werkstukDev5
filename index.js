@@ -4,17 +4,6 @@ const app = express()
 const bgRouter = express.Router();
 const port = 8000
 
-const {
-    Client
-} = require('pg')
-const client = new Client({
-    host: "localhost",
-    user: "postgres",
-    port: 5432,
-    password: "rootUser",
-    database: "postgres"
-})
-
 const pg = require('knex')({
 
     client: 'pg',
@@ -132,7 +121,6 @@ module.exports = {
     startExpress,
     app,
     port,
-    client,
     createTable,
     getPgData,
     addPgData,
