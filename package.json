@@ -15,8 +15,7 @@
   "devDependencies": {},
   "scripts": {
     "start": "node index.js",
-    "test": "jest --forceExit",
-    "test-ci": "jest --forceExit"
+    "test": "jest --forceExit"
   },
   "repository": {
     "type": "git",
