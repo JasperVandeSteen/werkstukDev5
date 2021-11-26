@@ -39,8 +39,7 @@ jobs:
       - name: npm install
         run: |
           cd api/src
-          npm ci
-          
+          npm ci  
         
       - name: Run tests
         run: |
