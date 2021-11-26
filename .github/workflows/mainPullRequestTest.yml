@@ -9,6 +9,13 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+    
+env:
+  PORT: 5432
+  APIPORT: 8000
+  POSTGRES_PASSWORD: rootUser
+  POSTGRES_USER: postgres
+  POSTGRES_DB: postgres
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -38,4 +45,4 @@ jobs:
       - name: Run tests
         run: |
           cd api/src
-          npm test
+          npm test-ci
