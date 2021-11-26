@@ -30,8 +30,12 @@ jobs:
         run: docker-compose up -d
         
       - name: npm install
-        run: npm ci
+        run: |
+          cd api/src
+          npm ci
           
         
       - name: Run tests
-        run: npm test
+        run: |
+          cd api/src
+          npm test
