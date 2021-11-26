@@ -9,6 +9,8 @@ const helpers = {
         return str && str.length >= lngth ? str : false;
     },
 
+    //hehey
+
     /**
      * check if a given string is a url
      * @param {string} url 
