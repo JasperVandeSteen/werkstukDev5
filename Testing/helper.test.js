@@ -5,7 +5,7 @@ const request = require('supertest');
 
 describe("Unit Tests", () => {
     test("Check if Port is valid", () => {
-        expect(helpers.checkStringLength(functions.port, 4)).toBeTruty();
+        expect(helpers.checkStringLength(functions.port.toString(), 4)).toBeTruthy();
     });
 })
 

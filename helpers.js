@@ -6,7 +6,7 @@ const helpers = {
      * @returns false if not a string or too long, otherwise string itself
      */
     checkStringLength(str, lngth) {
-        return str && typeof str == "string" && str.length <= lngth ? str : false;
+        return str && str.length >= lngth ? str : false;
     },
 
     /**
