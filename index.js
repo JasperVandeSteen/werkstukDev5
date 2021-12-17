@@ -10,7 +10,7 @@ const pg = require('knex')({
 
     searchPath: ['knex', 'public'],
 
-    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@pg:5432/postgres'
+    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@localhost:5432/postgres'
 
 });
 
