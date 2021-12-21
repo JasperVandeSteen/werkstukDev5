@@ -1,2 +1,2 @@
 # werkstukDev5
-This is the feat/CreateFestivals branch
+This is the feat/updateFestivals branch
