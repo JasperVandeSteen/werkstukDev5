@@ -3,11 +3,7 @@ const functions = require("./../index")
 
 const request = require('supertest');
 
-describe("Unit Tests", () => {
-    test("Check if Port is valid", () => {
-        expect(helpers.checkStringLength(functions.port.toString(), 4)).toBeTruthy();
-    });
-})
+describe("Unit Tests", () => {})
 
 describe("CRUD function tests", () => {
     it('tests if connection to endpoint is successful', async () => {
