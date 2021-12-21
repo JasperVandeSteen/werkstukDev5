@@ -3,11 +3,9 @@ const bodyParser = require('body-parser');
 
 const app = express()
 const bgRouter = express.Router();
-app.use(
-    bodyParser.urlencoded({
-        extended: false,
-    })
-);
+
+// create application/json parser
+let jsonParser = bodyParser.json()
 
 const pg = require('knex')({
 
@@ -32,9 +30,9 @@ bgRouter.route('/users')
         getUsers();
         res.send(pgData);
     })
-    .post((req, res) => {
+    .post(jsonParser, (req, res) => {
         addUser(req.body.naam, req.body.email);
-        res.send("Succesfully added data: " + req.body);
+        res.send("Succesfully added data: " + req.body.naam + " & " + req.body.email);
     });
 
 bgRouter.route('/users/:id')
@@ -42,8 +40,8 @@ bgRouter.route('/users/:id')
         deleteUser(req.params.id);
         res.send("Succesfully deleted!");
     })
-    .patch((req, res) => {
-        updateUser(req.body, req.params.id);
+    .patch(jsonParser, (req, res) => {
+        updateUser(req.body.naam, req.body.email, req.params.id);
         res.send("Succesfully updated!");
     });
 
@@ -161,10 +159,10 @@ async function addUser(naam, email) {
  * @param {*} id the id from the link
  * @returns Returns the updated element
  */
-async function updateUser(body, id) {
+async function updateUser(naam, email, id) {
     return await pg.table('users').where('id', '=', id).update({
-        "naam": "UPDATE",
-        "email": "update@update.com"
+        "naam": naam,
+        "email": email
     })
 }
 
