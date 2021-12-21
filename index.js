@@ -1,8 +1,13 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 
 const app = express()
 const bgRouter = express.Router();
-const port = 8000
+app.use(
+    bodyParser.urlencoded({
+        extended: false,
+    })
+);
 
 const pg = require('knex')({
 
@@ -10,24 +15,26 @@ const pg = require('knex')({
 
     searchPath: ['knex', 'public'],
 
-    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@localhost:5432/postgres'
+    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@postgres:5432/postgres'
 
 });
 
 let pgData;
 
 
-// BGROUTING FOR CRUDN ACTIONS ------------------------------------------
+// BGROUTING FOR CRUD ACTIONS ------------------------------------------
 
-startExpress();
+startRoutes();
+
+// Routes for USERS
 bgRouter.route('/users')
     .get((req, res) => {
         getUsers();
         res.send(pgData);
     })
     .post((req, res) => {
-        addUser(req.body);
-        res.send("Succesfully added data!");
+        addUser(req.body.naam, req.body.email);
+        res.send("Succesfully added data: " + req.body);
     });
 
 bgRouter.route('/users/:id')
@@ -40,29 +47,50 @@ bgRouter.route('/users/:id')
         res.send("Succesfully updated!");
     });
 
+
+// Routes for FESTIVALS
+bgRouter.route('/festivals')
+    .get((req, res) => {
+        getFestivals();
+        res.send(pgData);
+    });
+//     .post((req, res) => {
+//         addFestival(req.body);
+//         res.send("Succesfully added data!");
+//     });
+
+// bgRouter.route('/festivals/:id')
+//     .delete((req, res) => {
+//         deleteFestival(req.params.id);
+//         res.send("Succesfully deleted!");
+//     })
+//     .patch((req, res) => {
+//         updateFestival(req.body, req.params.id);
+//         res.send("Succesfully updated!");
+//     });
+
 //---------------------------------------------------------------------
 
 /**
  * Starts up the express server on localhost.
  */
-function startExpress() {
+function startRoutes() {
     app.get('/', (req, res) => {
         res.send("type /pgData to continiue...")
     });
 
     app.use('/pgData', bgRouter);
-
-    app.listen(port, () => {
-        console.log(`Example app listening at http://localhost:${port}`)
-    });
 }
 
 /**
  * Creates a standard table if the database doesn't yet contain one.
  */
-async function createTable() {
+async function createTables() {
+    let hadToCreateUsers = false;
+    // Create users table
     await pg.schema.hasTable('users').then(function (exists) {
         if (!exists) {
+            hadToCreateUsers = true;
             return pg.schema.createTable('users', function (t) {
                 t.increments('id').primary();
                 t.string("naam", 100);
@@ -70,15 +98,48 @@ async function createTable() {
             });
         }
     });
-    for (let i = 0; i < 6; i++) {
-        await pg.table('users').insert({
-            naam: "test" + i,
-            email: "test" + 1 + "@test.com"
+    if (hadToCreateUsers) {
+        for (let i = 0; i < 6; i++) {
+            await pg.table('users').insert({
+                naam: "test" + i,
+                email: "test" + 1 + "@test.com"
+            });
+        }
+    }
+
+    let hadToCreateFestivals = false;
+    // Create festivals table
+    await pg.schema.hasTable('festivals').then(function (exists) {
+        if (!exists) {
+            hadToCreateFestivals = true;
+            return pg.schema.createTable('festivals', function (t) {
+                t.increments('id').primary();
+                t.string("naam", 100);
+                t.string("genre", 100);
+                t.json('guestList').nullable();
+            });
+        }
+    });
+    if (hadToCreateFestivals) {
+        await pg.table('festivals').insert({
+            naam: "Pukkelpop",
+            genre: "Pop",
+            guestList: JSON.stringify(pg.select().table("users"))
+        });
+
+        await pg.table('festivals').insert({
+            naam: "Tommorowland",
+            genre: "EDM",
+            guestList: JSON.stringify(pg.select().table("users"))
         });
     }
 }
-createTable();
+createTables();
 
+
+/**
+ * USER sided CRUD actions
+ */
 async function getUsers() {
     pgData = await pg.select().table("users");
 }
@@ -87,10 +148,10 @@ async function getUsers() {
  * Adds an element to the users table
  * @param {*} body the provided body in the POST request
  */
-async function addUser(body) {
+async function addUser(naam, email) {
     await pg.table('users').insert({
-        "naam": body.naam,
-        "email": body.email
+        "naam": naam,
+        "email": email
     });
 }
 
@@ -117,14 +178,60 @@ async function deleteUser(id) {
 }
 
 
+/**
+ * FESTIVAL sided CRUD actions
+ */
+async function getFestivals() {
+    pgData = await pg.select().table("festivals");
+}
+
+/**
+ * Adds an element to the users table
+ * @param {*} body the provided body in the POST request
+ */
+async function addFestival(body) {
+    await pg.table('festivals').insert({
+        "naam": body.naam,
+        "genre": body.genre,
+        "guestList": null
+    });
+}
+
+/**
+ * Updates the selected table element.
+ * @param {*} body the provided body in the PATCH request
+ * @param {*} id the id from the link
+ * @returns Returns the updated element
+ */
+async function updateFestival(body, id) {
+    return await pg.table('festivals').where('id', '=', id).update({
+        "naam": "UPDATE FESTIVAL",
+        "genre": "UPDATE GENRE",
+        "guestList": null
+    })
+}
+
+/**
+ * Deletes a selceted table element.
+ * @param {*} id the id from the link
+ * @returns Returns the deleted element
+ */
+async function deleteFestival(id) {
+    return await pg.table('festivals').where('id', '=', id).del();
+}
+
+
 module.exports = {
-    startExpress,
+    startRoutes,
     app,
-    port,
-    createTable,
-    getPgData,
-    addPgData,
-    updatePgData,
-    deletePgData,
+    createTables,
+    getUsers,
+    getFestivals,
+    addUser,
+    addFestival,
+    updateUser,
+    updateFestival,
+    deleteUser,
+    deleteFestival,
     pgData
 }
