@@ -22,21 +22,21 @@ let pgData;
 startExpress();
 bgRouter.route('/users')
     .get((req, res) => {
-        getPgData();
+        getUsers();
         res.send(pgData);
     })
     .post((req, res) => {
-        addPgData(req.body);
+        addUser(req.body);
         res.send("Succesfully added data!");
     });
 
 bgRouter.route('/users/:id')
     .delete((req, res) => {
-        deletePgData(req.params.id);
+        deleteUser(req.params.id);
         res.send("Succesfully deleted!");
     })
     .patch((req, res) => {
-        updatePgData(req.body, req.params.id);
+        updateUser(req.body, req.params.id);
         res.send("Succesfully updated!");
     });
 
@@ -79,7 +79,7 @@ async function createTable() {
 }
 createTable();
 
-async function getPgData() {
+async function getUsers() {
     pgData = await pg.select().table("users");
 }
 
@@ -87,7 +87,7 @@ async function getPgData() {
  * Adds an element to the users table
  * @param {*} body the provided body in the POST request
  */
-async function addPgData(body) {
+async function addUser(body) {
     await pg.table('users').insert({
         "naam": body.naam,
         "email": body.email
@@ -100,7 +100,7 @@ async function addPgData(body) {
  * @param {*} id the id from the link
  * @returns Returns the updated element
  */
-async function updatePgData(body, id) {
+async function updateUser(body, id) {
     return await pg.table('users').where('id', '=', id).update({
         "naam": "UPDATE",
         "email": "update@update.com"
@@ -112,7 +112,7 @@ async function updatePgData(body, id) {
  * @param {*} id the id from the link
  * @returns Returns the deleted element
  */
-async function deletePgData(id) {
+async function deleteUser(id) {
     return await pg.table('users').where('id', '=', id).del();
 }
 
