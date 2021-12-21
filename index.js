@@ -51,21 +51,21 @@ bgRouter.route('/festivals')
     .get((req, res) => {
         getFestivals();
         res.send(pgData);
+    })
+    .post((req, res) => {
+        addFestival(req.body);
+        res.send("Succesfully added data!");
     });
-//     .post((req, res) => {
-//         addFestival(req.body);
-//         res.send("Succesfully added data!");
-//     });
 
-// bgRouter.route('/festivals/:id')
-//     .delete((req, res) => {
-//         deleteFestival(req.params.id);
-//         res.send("Succesfully deleted!");
-//     })
-//     .patch((req, res) => {
-//         updateFestival(req.body, req.params.id);
-//         res.send("Succesfully updated!");
-//     });
+bgRouter.route('/festivals/:id')
+    .delete((req, res) => {
+        deleteFestival(req.params.id);
+        res.send("Succesfully deleted!");
+    })
+    .patch((req, res) => {
+        updateFestival(req.body, req.params.id);
+        res.send("Succesfully updated!");
+    });
 
 //---------------------------------------------------------------------
 
@@ -85,6 +85,7 @@ function startRoutes() {
  */
 async function createTables() {
     let hadToCreateUsers = false;
+
     // Create users table
     await pg.schema.hasTable('users').then(function (exists) {
         if (!exists) {
@@ -96,39 +97,39 @@ async function createTables() {
             });
         }
     });
-    if (hadToCreateUsers) {
-        for (let i = 0; i < 6; i++) {
-            await pg.table('users').insert({
-                naam: "test" + i,
-                email: "test" + 1 + "@test.com"
-            });
-        }
-    }
 
-    let hadToCreateFestivals = false;
-    // Create festivals table
+    // Create festival table
     await pg.schema.hasTable('festivals').then(function (exists) {
         if (!exists) {
-            hadToCreateFestivals = true;
             return pg.schema.createTable('festivals', function (t) {
                 t.increments('id').primary();
                 t.string("naam", 100);
                 t.string("genre", 100);
-                t.json('guestList').nullable();
+                //t.json('guestList').nullable();
+                t.integer('guestList', 1).unsigned().references('id').inTable('users');
             });
         }
     });
-    if (hadToCreateFestivals) {
+
+    if (hadToCreateUsers) {
+        console.log("adding data to database");
+        for (let i = 0; i < 6; i++) {
+            await pg.table('users').insert({
+                naam: "test" + (i + 1),
+                email: "test" + 1 + "@test.com"
+            });
+        }
+
         await pg.table('festivals').insert({
             naam: "Pukkelpop",
             genre: "Pop",
-            guestList: JSON.stringify(pg.select().table("users"))
+            guestList: 1
         });
 
         await pg.table('festivals').insert({
             naam: "Tommorowland",
             genre: "EDM",
-            guestList: JSON.stringify(pg.select().table("users"))
+            guestList: 1
         });
     }
 }
@@ -174,7 +175,8 @@ async function updateUser(naam, email, newId, id) {
  * @returns Returns the deleted element
  */
 async function deleteUser(id) {
-    return await pg.table('users').where('id', '=', id).del();
+    //return await pg.table('users').where('id', '=', id).del();
+    return await pg.raw('DROP TABLE users CASCADE');
 }
 
 
@@ -217,7 +219,8 @@ async function updateFestival(body, id) {
  * @returns Returns the deleted element
  */
 async function deleteFestival(id) {
-    return await pg.table('festivals').where('id', '=', id).del();
+    //return await pg.table('festivals').where('id', '=', id).del();
+    return await pg.raw('DROP TABLE festivals CASCADE');
 }
 
 
