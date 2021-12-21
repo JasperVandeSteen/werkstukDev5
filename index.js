@@ -159,8 +159,10 @@ async function addUser(naam, email) {
  * @param {*} id the id from the link
  * @returns Returns the updated element
  */
-async function updateUser(naam, email, id) {
+async function updateUser(naam, email, newId, id) {
+    if (newId != null && newId != undefined && newId != id && newId != 0) id = newId;
     return await pg.table('users').where('id', '=', id).update({
+        "id": id,
         "naam": naam,
         "email": email
     })
