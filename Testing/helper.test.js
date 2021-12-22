@@ -41,9 +41,14 @@ describe("festivals CRUD function tests", () => {
         //expect(response.body.status).toBe("Succesfully updated!");
     });
 
-    // it('tests DELETE request', async () => {
-    //     const response = await request(functions.app).delete('/pgData/festivals/2');
-    //     expect(response.statusCode).toEqual(200);
-    //     //expect(response.body.status).toBe("Succesfully deleted!");
+    it('tests DELETE request', async () => {
+        const response = await request(functions.app).delete('/pgData/festivals/2');
+        expect(response.statusCode).toEqual(200);
+        //expect(response.body.status).toBe("Succesfully deleted!");
+    });
+
+    // it('check if item is deleted', async () => {
+    //     const response = await request(functions.app).get('/pgData/festivals/2');
+    //     expect(response.statusCode).toEqual(404);
     // });
 })
