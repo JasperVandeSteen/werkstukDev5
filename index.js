@@ -45,6 +45,13 @@ bgRouter.route('/users/:id')
         res.send("Succesfully updated!");
     });
 
+// Routes for FESTIVALS
+bgRouter.route('/festivals')
+    .get((req, res) => {
+        getFestivals();
+        res.send(pgData);
+    });
+
 //---------------------------------------------------------------------
 
 /**
