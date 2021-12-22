@@ -59,6 +59,10 @@ bgRouter.route('/festivals/:id')
     .patch(jsonParser, (req, res) => {
         updateFestival(req.body.naam, req.body.genre, req.params.id);
         res.send("Succesfully updated!");
+    })
+    .delete((req, res) => {
+        deleteFestival(req.params.id);
+        res.send("Succesfully deleted!");
     });
 
 //---------------------------------------------------------------------
