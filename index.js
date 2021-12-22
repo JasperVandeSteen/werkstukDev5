@@ -56,7 +56,7 @@ bgRouter.route('/festivals')
     });
 
 bgRouter.route('/festivals/:id')
-    .patch((req, res) => {
+    .patch(jsonParser, (req, res) => {
         updateFestival(req.body.naam, req.body.genre, req.params.id);
         res.send("Succesfully updated!");
     });
