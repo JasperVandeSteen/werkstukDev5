@@ -11,6 +11,11 @@ describe("user CRUD function tests", () => {
         expect(response.statusCode).toEqual(200);
     });
 
+    it('test GET request', async () => {
+        const response = await request(functions.app).get('/pgData/users/1');
+        expect(response.statusCode).toEqual(200);
+    });
+
     it('tests PATCH request', async () => {
         const response = await request(functions.app).patch('/pgData/users/2');
         expect(response.statusCode).toEqual(200);
@@ -44,11 +49,5 @@ describe("festivals CRUD function tests", () => {
     it('tests DELETE request', async () => {
         const response = await request(functions.app).delete('/pgData/festivals/2');
         expect(response.statusCode).toEqual(200);
-        //expect(response.body.status).toBe("Succesfully deleted!");
     });
-
-    // it('check if item is deleted', async () => {
-    //     const response = await request(functions.app).get('/pgData/festivals/2');
-    //     expect(response.statusCode).toEqual(404);
-    // });
 })

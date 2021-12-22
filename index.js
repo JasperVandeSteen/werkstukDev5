@@ -36,6 +36,10 @@ bgRouter.route('/users')
     });
 
 bgRouter.route('/users/:id')
+    .get((req, res) => {
+        getUser(req.params.id);
+        res.send(pgData);
+    })
     .delete((req, res) => {
         deleteUser(req.params.id);
         res.send("Succesfully deleted!");
@@ -189,6 +193,15 @@ async function deleteUser(id) {
     //return await pg.raw('DROP TABLE users CASCADE');
 }
 
+/**
+ * Deletes a selceted table element.
+ * @param {*} id the id from the link
+ * @returns Returns the selected element by id
+ */
+async function getUser(id) {
+    pgData = await pg.select().table("users").where('id', '=', id);
+}
+
 
 /**
  * FESTIVAL sided CRUD actions
@@ -243,7 +256,8 @@ async function deleteFestival(id) {
 
 /**
  * Adds an element to the users table
- * @param {*} body the provided body in the POST request
+ * @param {*} id the provided id in the GET request
+ * @returns Returns the selected element by id
  */
 async function getFestival(id) {
     pgData = await pg.select().table("festivals").where('id', '=', id);
