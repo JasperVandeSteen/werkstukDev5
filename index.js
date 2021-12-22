@@ -55,6 +55,12 @@ bgRouter.route('/festivals')
         res.send("Succesfully added data!");
     });
 
+bgRouter.route('/festivals/:id')
+    .patch((req, res) => {
+        updateFestival(req.body, req.params.id);
+        res.send("Succesfully updated!");
+    });
+
 //---------------------------------------------------------------------
 
 /**
