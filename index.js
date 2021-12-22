@@ -45,28 +45,6 @@ bgRouter.route('/users/:id')
         res.send("Succesfully updated!");
     });
 
-
-// Routes for FESTIVALS
-bgRouter.route('/festivals')
-    .get((req, res) => {
-        getFestivals();
-        res.send(pgData);
-    })
-    .post((req, res) => {
-        addFestival(req.body);
-        res.send("Succesfully added data!");
-    });
-
-bgRouter.route('/festivals/:id')
-    .delete((req, res) => {
-        deleteFestival(req.params.id);
-        res.send("Succesfully deleted!");
-    })
-    .patch((req, res) => {
-        updateFestival(req.body, req.params.id);
-        res.send("Succesfully updated!");
-    });
-
 //---------------------------------------------------------------------
 
 /**
