@@ -241,6 +241,14 @@ async function deleteFestival(id) {
     //return await pg.raw('DROP TABLE festivals CASCADE');
 }
 
+/**
+ * Adds an element to the users table
+ * @param {*} body the provided body in the POST request
+ */
+async function getFestival(id) {
+    pgData = await pg.select().table("festivals").where('id', '=', id);
+}
+
 
 module.exports = {
     startRoutes,
