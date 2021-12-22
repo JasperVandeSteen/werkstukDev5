@@ -30,6 +30,11 @@ describe("festivals CRUD function tests", () => {
         expect(response.statusCode).toEqual(200);
     });
 
+    it('tests POST request', async () => {
+        const response = await request(functions.app).post('/pgData/festivals');
+        expect(response.statusCode).toEqual(200);
+    });
+
     // it('tests PATCH request', async () => {
     //     const response = await request(functions.app).patch('/pgData/festivals/2');
     //     expect(response.statusCode).toEqual(200);
