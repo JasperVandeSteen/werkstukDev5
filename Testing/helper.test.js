@@ -37,7 +37,7 @@ describe("festivals CRUD function tests", () => {
     });
 
     it('tests DELETE request', async () => {
-        const response = await request(functions.app).delete('/pgData/festivals/3');
+        const response = await request(functions.app).delete('/pgData/festivals/2');
         expect(response.statusCode).toEqual(200);
         //expect(response.body.status).toBe("Succesfully deleted!");
     });

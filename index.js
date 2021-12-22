@@ -175,8 +175,8 @@ async function updateUser(naam, email, newId, id) {
  * @returns Returns the deleted element
  */
 async function deleteUser(id) {
-    //return await pg.table('users').where('id', '=', id).del();
-    return await pg.raw('DROP TABLE users CASCADE');
+    return await pg.table('users').where('id', '=', id).del();
+    //return await pg.raw('DROP TABLE users CASCADE');
 }
 
 
@@ -219,8 +219,8 @@ async function updateFestival(body, id) {
  * @returns Returns the deleted element
  */
 async function deleteFestival(id) {
-    //return await pg.table('festivals').where('id', '=', id).del();
-    return await pg.raw('DROP TABLE festivals CASCADE');
+    return await pg.table('festivals').where('id', '=', id).del();
+    //return await pg.raw('DROP TABLE festivals CASCADE');
 }
 
 

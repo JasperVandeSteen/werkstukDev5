@@ -9,7 +9,7 @@ services:
     ports:
       - 8000:${APIPORT}
     environment:
-     PG_CONNECTION_STRING: postgress://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_DB}:${PORT}/${POSTGRES_DB}
+     PG_CONNECTION_STRING: postgress://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${PORT}/${POSTGRES_DB}
      PORT: ${APIPORT}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
