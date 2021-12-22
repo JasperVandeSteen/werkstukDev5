@@ -1,3 +1,3 @@
 # werkstukDev5
 This is the develop branch
-DEVELOP & Create & READ & POST & PATCH
+DEVELOP & Create & READ & POST & PATCH & DELETE
