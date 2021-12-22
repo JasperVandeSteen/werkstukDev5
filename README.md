@@ -31,6 +31,10 @@ STARTUP
             -> docker-compose down (optioneel)
             -> docker compose up --build -d
 
+    3. RUN TESTS
+        Om testen te runnen, typ je volgende command:
+            -> npm test
+
 
 ---------->>
 ENDPOINTS
