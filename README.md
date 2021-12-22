@@ -1,3 +1,2 @@
 # werkstukDev5
-This is the develop branch
-DEVELOP
+This is the ReadFestivals branch
