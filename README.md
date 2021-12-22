@@ -1,3 +1,2 @@
 # werkstukDev5
-This is the develop branch
-DEVELOP & Create & READ
+This is the PatchFestivals branch
