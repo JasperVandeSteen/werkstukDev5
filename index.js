@@ -50,6 +50,9 @@ bgRouter.route('/festivals')
     .get((req, res) => {
         getFestivals();
         res.send(pgData);
+    }).post((req, res) => {
+        addFestival(req.body);
+        res.send("Succesfully added data!");
     });
 
 //---------------------------------------------------------------------
