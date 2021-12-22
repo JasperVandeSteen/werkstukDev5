@@ -51,13 +51,13 @@ bgRouter.route('/festivals')
         getFestivals();
         res.send(pgData);
     }).post(jsonParser, (req, res) => {
-        addFestival(req.body);
+        addFestival(req.body.naam, req.body.genre);
         res.send("Succesfully added data!");
     });
 
 bgRouter.route('/festivals/:id')
     .patch((req, res) => {
-        updateFestival(req.body, req.params.id);
+        updateFestival(req.body.naam, req.body.genre, req.params.id);
         res.send("Succesfully updated!");
     });
 
@@ -193,14 +193,14 @@ async function getFestivals() {
  * Adds an element to the users table
  * @param {*} body the provided body in the POST request
  */
-async function addFestival(body) {
-    if (body.naam == null || body.genre == null || body.naam == undefined || body.genre == undefined) {
+async function addFestival(naam, genre) {
+    if (naam == null || genre == null || naam == undefined || genre == undefined) {
         naam = "STANDARD VALUE";
         genre = "STANDARD VALUE";
     }
     await pg.table('festivals').insert({
-        "naam": body.naam,
-        "genre": body.genre,
+        "naam": naam,
+        "genre": genre,
         "guestList": null
     });
 }
@@ -211,14 +211,14 @@ async function addFestival(body) {
  * @param {*} id the id from the link
  * @returns Returns the updated element
  */
-async function updateFestival(body, id) {
-    if (body.naam == null || body.genre == null || body.naam == undefined || body.genre == undefined) {
+async function updateFestival(naam, genre, id) {
+    if (naam == null || genre == null || naam == undefined || genre == undefined) {
         naam = "STANDARD VALUE";
         genre = "STANDARD VALUE";
     }
     return await pg.table('festivals').where('id', '=', id).update({
-        "naam": body.naam,
-        "genre": body.genre,
+        "naam": naam,
+        "genre": genre,
         "guestList": null
     })
 }
