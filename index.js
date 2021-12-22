@@ -50,6 +50,9 @@ bgRouter.route('/festivals')
     .get((req, res) => {
         getFestivals();
         res.send(pgData);
+    }).post(jsonParser, (req, res) => {
+        addFestival(req.body);
+        res.send("Succesfully added data!");
     });
 
 //---------------------------------------------------------------------
@@ -133,6 +136,10 @@ async function getUsers() {
  * @param {*} body the provided body in the POST request
  */
 async function addUser(naam, email) {
+    if (naam == null || email == null || naam == undefined || email == undefined) {
+        naam = "STANDARD VALUE";
+        email = "STANDARD@VALUE.COM";
+    }
     await pg.table('users').insert({
         "naam": naam,
         "email": email
@@ -147,6 +154,10 @@ async function addUser(naam, email) {
  */
 async function updateUser(naam, email, newId, id) {
     if (newId != null && newId != undefined && newId != id && newId != 0) id = newId;
+    if (naam == null || email == null || naam == undefined || email == undefined) {
+        naam = "STANDARD VALUE";
+        email = "STANDARD@VALUE.COM";
+    }
     return await pg.table('users').where('id', '=', id).update({
         "id": id,
         "naam": naam,
@@ -177,6 +188,10 @@ async function getFestivals() {
  * @param {*} body the provided body in the POST request
  */
 async function addFestival(body) {
+    if (body.naam == null || body.genre == null || body.naam == undefined || body.genre == undefined) {
+        naam = "STANDARD VALUE";
+        genre = "STANDARD VALUE";
+    }
     await pg.table('festivals').insert({
         "naam": body.naam,
         "genre": body.genre,
@@ -191,9 +206,13 @@ async function addFestival(body) {
  * @returns Returns the updated element
  */
 async function updateFestival(body, id) {
+    if (body.naam == null || body.genre == null || body.naam == undefined || body.genre == undefined) {
+        naam = "STANDARD VALUE";
+        genre = "STANDARD VALUE";
+    }
     return await pg.table('festivals').where('id', '=', id).update({
-        "naam": "UPDATE FESTIVAL",
-        "genre": "UPDATE GENRE",
+        "naam": body.naam,
+        "genre": body.genre,
         "guestList": null
     })
 }
