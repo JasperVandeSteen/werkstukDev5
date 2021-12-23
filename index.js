@@ -1,8 +1,11 @@
 const express = require('express')
+const bodyParser = require('body-parser');
 
 const app = express()
 const bgRouter = express.Router();
-const port = 8000
+
+// create application/json parser
+let jsonParser = bodyParser.json()
 
 const pg = require('knex')({
 
@@ -10,34 +13,60 @@ const pg = require('knex')({
 
     searchPath: ['knex', 'public'],
 
-    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@localhost:5432/postgres'
+    connection: process.env.PG_CONNECTION_STRING ? process.env.PG_CONNECTION_STRING : 'postgres://postgres:rootUser@postgres:5432/postgres'
 
 });
 
 let pgData;
 
 
-// BGROUTING FOR CRUDN ACTIONS ------------------------------------------
+// BGROUTING FOR CRUD ACTIONS ------------------------------------------
 
-startExpress();
+startRoutes();
+
+// Routes for USERS
 bgRouter.route('/users')
     .get((req, res) => {
-        getPgData();
-        res.send(pgData);
+        getUsers().then(res.send(pgData));
     })
-    .post((req, res) => {
-        addPgData(req.body);
-        res.send("Succesfully added data!");
+    .post(jsonParser, (req, res) => {
+        addUser(req.body.naam, req.body.email);
+        res.send("Succesfully added data: " + req.body.naam + " & " + req.body.email);
     });
 
 bgRouter.route('/users/:id')
+    .get((req, res) => {
+        getUser(req.params.id).then(res.send(pgData));
+    })
     .delete((req, res) => {
-        deletePgData(req.params.id);
+        deleteUser(req.params.id);
         res.send("Succesfully deleted!");
     })
-    .patch((req, res) => {
-        updatePgData(req.body, req.params.id);
+    .patch(jsonParser, (req, res) => {
+        updateUser(req.body.naam, req.body.email, req.params.id);
         res.send("Succesfully updated!");
+    });
+
+// Routes for FESTIVALS
+bgRouter.route('/festivals')
+    .get((req, res) => {
+        getFestivals().then(res.send(pgData));
+    }).post(jsonParser, (req, res) => {
+        addFestival(req.body.naam, req.body.genre, req.body.guestList);
+        res.send("Succesfully added data!");
+    });
+
+bgRouter.route('/festivals/:id')
+    .get((req, res) => {
+        getFestival(req.params.id).then(res.send(pgData));
+    })
+    .patch(jsonParser, (req, res) => {
+        updateFestival(req.body.naam, req.body.genre, req.body.guestList, req.params.id);
+        res.send("Succesfully updated!");
+    })
+    .delete((req, res) => {
+        deleteFestival(req.params.id);
+        res.send("Succesfully deleted!");
     });
 
 //---------------------------------------------------------------------
@@ -45,24 +74,24 @@ bgRouter.route('/users/:id')
 /**
  * Starts up the express server on localhost.
  */
-function startExpress() {
+function startRoutes() {
     app.get('/', (req, res) => {
-        res.send("type /pgData to continiue...")
+        res.send("type /pgData + /users or /festivals to continiue...")
     });
 
     app.use('/pgData', bgRouter);
-
-    app.listen(port, () => {
-        console.log(`Example app listening at http://localhost:${port}`)
-    });
 }
 
 /**
  * Creates a standard table if the database doesn't yet contain one.
  */
-async function createTable() {
+async function createTables() {
+    let hadToCreateUsers = false;
+
+    // Create users table
     await pg.schema.hasTable('users').then(function (exists) {
         if (!exists) {
+            hadToCreateUsers = true;
             return pg.schema.createTable('users', function (t) {
                 t.increments('id').primary();
                 t.string("naam", 100);
@@ -70,16 +99,49 @@ async function createTable() {
             });
         }
     });
-    for (let i = 0; i < 6; i++) {
-        await pg.table('users').insert({
-            naam: "test" + i,
-            email: "test" + 1 + "@test.com"
+
+    // Create festival table
+    await pg.schema.hasTable('festivals').then(function (exists) {
+        if (!exists) {
+            return pg.schema.createTable('festivals', function (t) {
+                t.increments('id').primary();
+                t.string("naam", 100);
+                t.string("genre", 100);
+                //t.json('guestList').nullable();
+                t.integer('guestList', 1).unsigned().references('id').inTable('users');
+            });
+        }
+    });
+
+    if (hadToCreateUsers) {
+        console.log("adding data to database");
+        for (let i = 0; i < 6; i++) {
+            await pg.table('users').insert({
+                naam: "test" + (i + 1),
+                email: "test" + 1 + "@test.com"
+            });
+        }
+
+        await pg.table('festivals').insert({
+            naam: "Pukkelpop",
+            genre: "Pop",
+            guestList: 1
+        });
+
+        await pg.table('festivals').insert({
+            naam: "Tommorowland",
+            genre: "EDM",
+            guestList: 1
         });
     }
 }
-createTable();
+createTables();
 
-async function getPgData() {
+
+/**
+ * USER sided CRUD actions
+ */
+async function getUsers() {
     pgData = await pg.select().table("users");
 }
 
@@ -87,10 +149,14 @@ async function getPgData() {
  * Adds an element to the users table
  * @param {*} body the provided body in the POST request
  */
-async function addPgData(body) {
+async function addUser(naam, email) {
+    if (naam == null || email == null || naam == undefined || email == undefined) {
+        naam = "STANDARD VALUE";
+        email = "STANDARD@VALUE.COM";
+    }
     await pg.table('users').insert({
-        "naam": body.naam,
-        "email": body.email
+        "naam": naam,
+        "email": email
     });
 }
 
@@ -100,10 +166,14 @@ async function addPgData(body) {
  * @param {*} id the id from the link
  * @returns Returns the updated element
  */
-async function updatePgData(body, id) {
+async function updateUser(naam, email, id) {
+    if (naam == null || email == null || naam == undefined || email == undefined) {
+        naam = "STANDARD VALUE";
+        email = "STANDARD@VALUE.COM";
+    }
     return await pg.table('users').where('id', '=', id).update({
-        "naam": "UPDATE",
-        "email": "update@update.com"
+        "naam": naam,
+        "email": email
     })
 }
 
@@ -112,19 +182,91 @@ async function updatePgData(body, id) {
  * @param {*} id the id from the link
  * @returns Returns the deleted element
  */
-async function deletePgData(id) {
+async function deleteUser(id) {
     return await pg.table('users').where('id', '=', id).del();
+    //return await pg.raw('DROP TABLE users CASCADE');
+}
+
+/**
+ * Deletes a selceted table element.
+ * @param {*} id the id from the link
+ * @returns Returns the selected element by id
+ */
+async function getUser(id) {
+    pgData = await pg.select().table("users").where('id', '=', id);
+}
+
+
+/**
+ * FESTIVAL sided CRUD actions
+ */
+async function getFestivals() {
+    pgData = await pg.select().table("festivals");
+}
+
+/**
+ * Adds an element to the users table
+ * @param {*} body the provided body in the POST request
+ */
+async function addFestival(naam, genre, guestList) {
+    if (naam == null || naam == undefined) naam = "STANDAARD WAARDE"
+    if (genre == null || genre == undefined) genre = "STANDAARD WAARDE"
+    if (guestList == null || guestList == undefined) guestList = "STANDAARD WAARDE"
+    await pg.table('festivals').insert({
+        "naam": naam,
+        "genre": genre,
+        "guestList": guestList
+    });
+}
+
+/**
+ * Updates the selected table element.
+ * @param {*} body the provided body in the PATCH request
+ * @param {*} id the id from the link
+ * @returns Returns the updated element
+ */
+async function updateFestival(naam, genre, guestList, id) {
+    if (naam == null || naam == undefined) naam = "STANDAARD WAARDE"
+    if (genre == null || genre == undefined) genre = "STANDAARD WAARDE"
+    if (guestList == null || guestList == undefined) guestList = "STANDAARD WAARDE"
+    return await pg.table('festivals').where('id', '=', id).update({
+        "naam": naam,
+        "genre": genre,
+        "guestList": guestList
+    })
+}
+
+/**
+ * Deletes a selceted table element.
+ * @param {*} id the id from the link
+ * @returns Returns the deleted element
+ */
+async function deleteFestival(id) {
+    return await pg.table('festivals').where('id', '=', id).del();
+    //return await pg.raw('DROP TABLE festivals CASCADE');
+}
+
+/**
+ * Adds an element to the users table
+ * @param {*} id the provided id in the GET request
+ * @returns Returns the selected element by id
+ */
+async function getFestival(id) {
+    pgData = await pg.select().table("festivals").where('id', '=', id);
 }
 
 
 module.exports = {
-    startExpress,
+    startRoutes,
     app,
-    port,
-    createTable,
-    getPgData,
-    addPgData,
-    updatePgData,
-    deletePgData,
+    createTables,
+    getUsers,
+    getFestivals,
+    addUser,
+    addFestival,
+    updateUser,
+    updateFestival,
+    deleteUser,
+    deleteFestival,
     pgData
 }
